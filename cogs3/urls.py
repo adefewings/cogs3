@@ -72,10 +72,6 @@ urlpatterns = i18n_patterns(
         name='scw-password-reset',
     ),
     path(
-        'projects/',
-        include('project.urls'),
-    ),
-    path(
         'admin/',
         admin.site.urls,
     ),
@@ -83,9 +79,5 @@ urlpatterns = i18n_patterns(
         'terms-and-conditions/',
         TermsOfService.as_view(),
         name='terms-of-service',
-    ),
-    path(
-        '',
-        include('stats.urls'),
     ),
 )

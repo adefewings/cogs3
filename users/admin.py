@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from users.forms import (CustomUserChangeForm, CustomUserCreationForm, ProfileUpdateForm)
-from users.models import CustomUser, Profile, ShibbolethProfile, UserLastLogin
+from users.models import CustomUser, Profile, ShibbolethProfile
 from users.openldap import update_openldap_user
 
 
@@ -173,14 +173,3 @@ class CustomUserAdmin(UserAdmin):
         return super(CustomUserAdmin, self).get_form(request, user, **kwargs)
 
 
-@admin.register(UserLastLogin)
-class UserLastLoginAdmin(admin.ModelAdmin):
-    list_display = (
-        'user',
-        'last_login_time',
-        'last_login_host',
-        'modified_time',
-    )
-    autocomplete_fields = [
-        'user',
-    ]

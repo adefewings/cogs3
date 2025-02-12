@@ -1,9 +1,0 @@
-Project {{code}} Created
-
-A project application has been created and is awaiting approval.
-
-University: {{university}}
-
-Technical lead: {{technical_lead}}
-	
-Title: {{title}}
