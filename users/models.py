@@ -293,12 +293,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                     'institution': institution,
                 },
             )
-            # Shibboleth users by default should be able to create project applications.
-            if created:
-                if not obj.user.has_perm('project.add_project'):
-                    permission = Permission.objects.get(codename='add_project')
-                    obj.user.user_permissions.add(permission)
-                user_created_notification.delay(obj.user)
+            # # Shibboleth users by default should be able to create project applications.
+            # if created:
+            #     if not obj.user.has_perm('project.add_project'):
+            #         permission = Permission.objects.get(codename='add_project')
+            #         obj.user.user_permissions.add(permission)
+            #     user_created_notification.delay(obj.user)
         else:
             Profile.objects.update_or_create(user=self)
         self.profile.save()
