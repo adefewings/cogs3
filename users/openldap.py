@@ -22,7 +22,7 @@ def reset_openldap_password(request):
             raise ValidationError()
 
         # Ensure password complies with OpenLDAP password policy.
-        pattern = re.compile("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}")
+        pattern = re.compile(r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}")
         if not pattern.match(password):
             raise ValidationError()
 

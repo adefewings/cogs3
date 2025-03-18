@@ -128,6 +128,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "cogs3.wsgi.application"
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {

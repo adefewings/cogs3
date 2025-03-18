@@ -3,16 +3,16 @@ asn1crypto==1.5.1
 astroid==2.15.5
 async-timeout==4.0.2
 attrs==23.1.0
-backports-zoneinfo==0.2.1
+#backports-zoneinfo==0.2.1
 brotli==1.0.9
 certifi==2023.5.7
-cffi==1.15.1
+cffi #==1.15.1
 chardet==5.1.0
 charset-normalizer==3.1.0
 click==8.1.3
 codecov==2.1.13
 coverage==7.2.7
-cryptography==41.0.1
+cryptography #==41.0.1
 cssselect2==0.7.0
 defusedxml==0.7.1
 diff-match-patch==20230430
@@ -41,19 +41,19 @@ isort==5.12.0
 jdcal==1.4.1
 jsonschema==4.17.3
 lazy-object-proxy==1.9.0
-lxml==4.9.2
+#lxml==4.9.2
 markuppy==1.14
 mccabe==0.7.0
 mock==5.0.2
 mysql-connector-python==8.0.33
 mysqlclient==2.2.0
-numpy==1.24.4
+#numpy==1.24.4
 odfpy==1.4.1
 openpyxl==3.1.2
 outcome==1.2.0
-pandas==2.0.3
+#pandas==2.0.3
 pbr==5.11.1
-pillow==10.0.0
+#pillow==10.0.0
 pkgutil-resolve-name==1.3.10
 platformdirs==3.8.0
 protobuf==3.20.3
@@ -69,11 +69,11 @@ python-docx==0.8.11
 python-dotenv==1.0.0
 python-fsutil==0.10.0
 pytz==2023.3
-pyyaml==6.0
+#pyyaml==6.0
 redis==4.6.0
 requests==2.31.0
 rq==1.15.1
-scipy==1.10.1
+#scipy==1.10.1
 selenium==4.10.0
 six==1.16.0
 sniffio==1.3.0
