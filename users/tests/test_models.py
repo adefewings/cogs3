@@ -10,6 +10,7 @@ from users.models import CustomUserManager
 from users.models import Profile
 from users.models import ShibbolethProfile
 
+from utils.password_utils import generate_secure_password
 
 class ProfileTests(TestCase):
 
@@ -93,7 +94,7 @@ class CustomUserManagerTests(TestCase):
     def test_create_superuser(self):
         user = CustomUser.objects.create_superuser(
             email='@'.join(['test-user', self.institution.base_domain]),
-            password=CustomUser.objects.make_random_password(length=30),
+            password=generate_secure_password(),
         )
         self.assertTrue(user.is_staff)
         self.assertTrue(user.is_superuser)
@@ -104,7 +105,7 @@ class CustomUserManagerTests(TestCase):
         with self.assertRaises(ValueError) as e:
             user = CustomUser.objects.create_superuser(
                 email=None,
-                password=CustomUser.objects.make_random_password(length=30),
+                password=generate_secure_password(),
             )
         self.assertEqual(str(e.exception), 'The Email must be set.')
 
@@ -112,7 +113,7 @@ class CustomUserManagerTests(TestCase):
         with self.assertRaises(ValueError) as e:
             user = CustomUser.objects.create_superuser(
                 email='@'.join(['test-user', self.institution.base_domain]),
-                password=CustomUser.objects.make_random_password(length=30),
+                password=generate_secure_password(),
                 is_staff=False,
             )
         self.assertEqual(str(e.exception), 'Superuser must have is_staff=True.')
@@ -121,7 +122,7 @@ class CustomUserManagerTests(TestCase):
         with self.assertRaises(ValueError) as e:
             user = CustomUser.objects.create_superuser(
                 email='@'.join(['test-user', self.institution.base_domain]),
-                password=CustomUser.objects.make_random_password(length=30),
+                password=generate_secure_password(),
                 is_superuser=False,
             )
         self.assertEqual(str(e.exception), 'Superuser must have is_superuser=True.')
@@ -130,7 +131,7 @@ class CustomUserManagerTests(TestCase):
         with self.assertRaises(ValueError) as e:
             user = CustomUser.objects.create_superuser(
                 email='@'.join(['test-user', self.institution.base_domain]),
-                password=CustomUser.objects.make_random_password(length=30),
+                password=generate_secure_password(),
                 is_shibboleth_login_required=True,
             )
         self.assertEqual(str(e.exception), 'Superuser must have is_shibboleth_login_required=False.')

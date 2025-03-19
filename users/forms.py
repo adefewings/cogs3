@@ -9,6 +9,8 @@ from users.models import CustomUser
 from users.models import Profile
 from users.openldap import update_openldap_user
 
+from utils.password_utils import generate_secure_password
+
 
 class ProfileUpdateForm(forms.ModelForm):
     """
@@ -63,7 +65,7 @@ class CustomUserCreationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super(CustomUserCreationForm, self).save(commit=False)
-        user.set_password(CustomUser.objects.make_random_password(length=30))
+        user.set_password(generate_secure_password())
         user.username = user.email
         if commit:
             user.save()
