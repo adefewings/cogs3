@@ -1,4 +1,5 @@
 from selenium_base import SeleniumTestsBase
+from institution.models import Institution
 
 
 class UserIntegrationTests(SeleniumTestsBase):
@@ -7,6 +8,8 @@ class UserIntegrationTests(SeleniumTestsBase):
         """
         Sign in as an external user
         """
+        print(Institution.objects.all().values_list("name", flat=True))
+
         # Just sign in. There is an assert in the sign_in function
         users = [
             self.user,

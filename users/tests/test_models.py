@@ -3,7 +3,6 @@ from django.contrib.auth.models import Permission
 from django.test import TestCase
 
 from institution.models import Institution
-from institution.models import Institution
 from users.admin import CustomUserAdmin
 from users.models import CustomUser
 from users.models import CustomUserManager

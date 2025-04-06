@@ -1,7 +1,14 @@
+import os
 import time
+import tempfile
 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
+# from selenium.webdriver.firefox.options import Options as FirefoxOptions
+# from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 from django.contrib.auth.models import Group
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -18,8 +25,8 @@ from users.models import CustomUser
 
 class SeleniumTestsBase(StaticLiveServerTestCase):
     fixtures = [
-        'institution/fixtures/institutions.json',
-        'project/fixtures/tests/funding_sources.json',
+        #'institution/fixtures/institutions.json',
+        #'project/fixtures/tests/funding_sources.json',
     ]
 
     serialized_rollback = True
@@ -34,7 +41,8 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
 
     def fill_form_by_id(self, fields):
         for field, value in fields.items():
-            element = self.selenium.find_element_by_id(field)
+            #element = self.selenium.find_element_by_id(field)
+            element = self.selenium.find_element(By.ID, field)
             element.send_keys(value)
 
     def select_from_dropdown_by_id(self, id, index):
@@ -51,6 +59,7 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         """
         # Sign in using the external collaborators login form
         self.get_url(reverse('external-login'))
+        #self.selenium.get(self.live_server_url + reverse('external-login'))
 
         form_fields = {
             "id_username": user.email,
@@ -70,7 +79,8 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
 
     def submit_form(self, form_fields):
         key = list(form_fields.keys())[0]
-        self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
+        #self.selenium.find_element_by_id(key).send_keys(Keys.RETURN)
+        self.selenium.find_element(By.ID, key).send_keys(Keys.RETURN)
         # This seems to be necessary Geckodriver (Firefox)
         # I'm guessing it take a moment to process the submission
         time.sleep(1)
@@ -98,8 +108,28 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
         super(SeleniumTestsBase, self).tearDown()
         self.selenium.quit()
 
+    def _ensure_institution(self, name, base_domain):
+        Institution.objects.get_or_create(
+            base_domain=base_domain,
+            defaults={
+                "name": name,
+                "identity_provider": "https://dummy-idp.example.org/shibboleth",
+                "logo_path": "/static/img/dummy_logo.png",
+                "academic": True,
+                "commercial": False,
+                "service_provider": True,
+            },
+        )
+
     def setUp(self):
+        self._ensure_institution("Swansea University", "swan.ac.uk")
+        self._ensure_institution("Gmail University", "gmail.com")
+
+        # Ensure required group exists
+        project_owner_group, _ = Group.objects.get_or_create(name='project_owner')
+
         self.user_password = "password"
+        
         self.user = CustomUser(
             username="user@swan.ac.uk",
             email="user@swan.ac.uk",
@@ -161,11 +191,48 @@ class SeleniumTestsBase(StaticLiveServerTestCase):
 
         # Setup selenium
         activate(LANGUAGE_CODE)
-        profile = SELENIUM_WEBDRIVER_PROFILE()
-        profile.set_preference('intl.accept_languages', 'en-gb')
-        self.selenium = SELENIUM_WEBDRIVER(profile)
+
+        # FIREFOX
+        # profile = FirefoxProfile()
+        # profile.set_preference('intl.accept_languages', 'en-gb')
+
+        # options = FirefoxOptions()
+        # options.headless = True
+        # options.profile = profile
+
+        # self.selenium = webdriver.Firefox(options=options)
+
+        # CHROME
+        self.tmp_profile_base = tempfile.mkdtemp()
+        self.tmp_profile = os.path.join(self.tmp_profile_base, "chrome-profile")  # doesn't exist yet
+       
+        options = ChromeOptions()
+        options.headless = True
+        # options.add_argument("--no-sandbox")
+        # options.add_argument("--disable-dev-shm-usage")
+        # options.add_argument("--disable-gpu")
+        # options.add_argument("--disable-software-rasterizer")
+        # options.add_argument("--disable-accelerated-2d-canvas")
+        # options.add_argument("--disable-accelerated-video-decode")
+        # options.add_argument("--disable-vulkan")
+        # options.add_argument("--use-gl=swiftshader")
+        #options.add_argument(f"--user-data-dir={self.tmp_profile}")
+        options.add_argument("--headless=new")  # use new headless mode
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--disable-software-rasterizer")
+        options.add_argument("--disable-accelerated-2d-canvas")
+        options.add_argument("--disable-accelerated-video-decode")
+        options.add_argument("--disable-vulkan")
+        options.add_argument("--use-gl=swiftshader")
+        
+
+        self.selenium = webdriver.Chrome(options=options)
         self.selenium.implicitly_wait(2)
         self.get_url('')
+        #self.selenium.get(self.live_server_url)
+
         self.selenium.add_cookie({
             'name': 'cookielaw_accepted',
             'value': '1',
