@@ -27,7 +27,11 @@ class RegisterViewTests(UserViewTests, TestCase):
         Ensure the register view is accessible for an authenticated shibboleth user.
         """
         email = '@'.join(['authorised-user', self.institution.base_domain])
+
+        # Ensure user does not exist before registration
         self.assertFalse(CustomUser.objects.filter(email=email).exists())
+
+        # Simulate shibboleth headers
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
             'REMOTE_USER': email,
@@ -38,6 +42,7 @@ class RegisterViewTests(UserViewTests, TestCase):
             'reason_for_account': 'HPC',
             'accepted_terms_and_conditions': True,
         }
+
         response = self.client.post(
             reverse('register'),
             data,
@@ -104,6 +109,15 @@ class LoginViewTests(UserViewTests, TestCase):
         """
         Ensure an authorised user is redirected to the dashboard.
         """
+        ##############################################################
+        email = f"authorised-user@{self.institution.base_domain}"
+        user = CustomUser.objects.create_user(
+            email=email,
+            username=email,
+            is_shibboleth_login_required=True,
+        )
+        ###############################################################
+
         headers = {
             'Shib-Identity-Provider': self.institution.identity_provider,
             'REMOTE_USER': self.shibboleth_user.email

@@ -35,6 +35,9 @@ class CustomUserAdmin(UserAdmin):
             message = '{rows} accounts were'.format(rows=rows_updated)
         return message
 
+    @admin.action(
+        description='Activate selected users account in LDAP'
+    )
     def activate_users(self, request, queryset):
         rows_updated = 0
         for user in queryset:
@@ -45,8 +48,10 @@ class CustomUserAdmin(UserAdmin):
         message = self._account_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for activation.'.format(message=message))
 
-    activate_users.short_description = 'Activate selected users account in LDAP'
 
+    @admin.action(
+        description='Deactivate selected users account in LDAP'
+    )
     def deactivate_users(self, request, queryset):
         rows_updated = 0
         for user in queryset:
@@ -57,7 +62,6 @@ class CustomUserAdmin(UserAdmin):
         message = self._account_action_message(rows_updated)
         self.message_user(request, '{message} successfully submitted for deactivation.'.format(message=message))
 
-    deactivate_users.short_description = 'Deactivate selected users account in LDAP'
 
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
@@ -150,20 +154,24 @@ class CustomUserAdmin(UserAdmin):
         'groups',
     )
 
+    @admin.display(
+        description='SCW Account Status'
+    )
     @classmethod
     def get_account_status(cls, instance):
         return instance.profile.get_account_status_display()
 
-    get_account_status.short_description = 'SCW Account Status'
 
+    @admin.display(
+        description='SCW Username'
+    )
     @classmethod
     def get_scw_username(cls, instance):
         return instance.profile.scw_username
 
-    get_scw_username.short_description = 'SCW Username'
 
     def get_form(self, request, user=None, **kwargs):
-        if not user:
+        if not user or not isinstance(user, CustomUser):
             self.inlines = []
         else:
             if user.is_shibboleth_login_required:
