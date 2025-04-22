@@ -10,6 +10,7 @@ from users.forms import RegisterForm
 from users.forms import TermsOfServiceForm
 from users.models import CustomUser
 
+from utils.password_utils import generate_secure_password
 
 class TermsOfService(LoginRequiredMixin, generic.UpdateView):
     form_class = TermsOfServiceForm
@@ -38,7 +39,11 @@ class RegisterView(generic.CreateView):
         form.instance.is_shibboleth_login_required = True
         form.instance.email = self.request.session['shib']['username']
         form.instance.username = form.instance.email
-        form.instance.set_password(CustomUser.objects.make_random_password(length=30))
+        # old broken call:
+        # form.instance.set_password(CustomUser.objects.make_random_password(length=30))
+        # use our secure helper instead:
+        random_pw = generate_secure_password(length=30, min_digits=3)
+        form.instance.set_password(random_pw)
         return super().form_valid(form)
 
 
